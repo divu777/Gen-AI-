@@ -1,0 +1,30 @@
+# Ignore virtual environment
+.venv/
+venv/
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment and IDE settings
+.env
+*.env
+.vscode/
+.idea/
+
+# macOS/Linux system files
+.DS_Store
+Thumbs.db
+
+# Test/coverage outputs
+htmlcov/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
