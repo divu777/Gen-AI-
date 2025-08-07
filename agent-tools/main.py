@@ -30,7 +30,7 @@ be run on the user terminal
 2) run_commands - function that can be called to pass linux commands in user terminal directly
     - Input: command
 
-Output JSON Format:
+#Output JSON Format:
 {{
     "step": "string",
     "content": "string",
