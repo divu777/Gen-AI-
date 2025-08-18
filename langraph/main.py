@@ -1,4 +1,5 @@
 # flake8: noqa
+# literal is basically like enum it would be just the output within
 from typing import Literal
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
