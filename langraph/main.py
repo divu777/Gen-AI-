@@ -57,10 +57,8 @@ def classify_node(state:State):
     
     
     output = response.choices[0].message.content;
-    print(output)
     
     jsonresponse = json.loads(output)
-    print(jsonresponse["is_coding_question"])
     
     state['is_coding_question']=jsonresponse['is_coding_question']
     
@@ -99,7 +97,6 @@ def coding_node(state:State):
     
     jsonresponse = json.loads(code_response)
     
-    print(jsonresponse['code'])
     
     state['llm_response']=jsonresponse['code']
     
@@ -112,23 +109,17 @@ def coding_node(state:State):
 def simple_node(state:State):
     user_query= state["user_query"];
     
-    SYSTEM_PROMPT='''
-    You are code generator agent that based on the user query write code snippet only. If asked anything else except that you respond with I couldn't help you with this query, and use 
-    different alternatives of this message so it doesn't sound repetative and generic
-    '''
     
     
     response = client.chat.completions.parse(
         model='deepseek-ai/DeepSeek-V3:fireworks-ai',
         messages=[
-            {'role':'system','content':SYSTEM_PROMPT},
             {'role':'user',"content":user_query}
         ]
     )
     
     simple_response = response.choices[0].message.content;
     
-    print(simple_response);
     
     state['llm_response']=simple_response
     
@@ -161,6 +152,5 @@ while True:
     }
     
     
-    response = graph.invoke(_state)
-    
-    print(response);
+    for events in graph.stream(_state,stream_mode='updates'):
+        print( events)

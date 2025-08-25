@@ -17,4 +17,31 @@ services:
       ports:
         - 6333:6333
 
+    mongodb:
+      image: mongo
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=admin
+        - MONGO_INITDB_ROOT_PASSWORD=admin
+      ports:
+        - 27017:27017
+
+    neo4j:
+      image: neo4j:latest
+      environment:
+        - NEO4J_AUTH=neo4j/divakar-jaiswal-6S3dkjnsdfsdj243424#$%%sdjdj
+        - NEO4JLABS_PLUGINS=["apoc"]
+        - NEO4J_dbms_security_procedures_unrestricted=apoc.*,apoc.meta.*
+        - NEO4J_dbms_security_procedures_allowlist=apoc.*,apoc.meta.*
+        - NEO4J_apoc_import_file_enabled="true"
+        - NEO4J_apoc_export_file_enabled="true"
+        - NEO4J_apoc_import_file_use_neo4j_config="true"
+      
+      ports:
+      - 7474:7474
+      - 7687:7687
+
+      volumes:
+        - neo4j_data:/data
+volumes:
+  neo4j_data:
 

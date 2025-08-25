@@ -1,3 +1,5 @@
+# flake8:noqa
+import requests
 from dotenv import load_dotenv
 import os
 from openai import OpenAI
@@ -54,56 +56,47 @@ Always give output in valid json, no markdown , no xml tags and no triple backsl
 
 messages=[{"role":"system","content":SYSTEM_PROMPT}]
 
-import requests
 def get_weather(city: str):
     url = f"https://wttr.in/{city}?format=%C+%t"
     response = requests.get(url)
 
     if response.status_code == 200:
         return f"The weather in {city} is {response.text}."
-    
+
     return "Something went wrong"
 
 
 def run_commands(arg):
     return os.system(arg)
 
+
 function = {
-    "get_weather":get_weather,
-    "run_commands":run_commands
+    "get_weather": get_weather,
+    "run_commands": run_commands
 }
 
 
-
-
 while True:
-    query = input("--->");
-    messages.append({"role":"user","content":query})
-
-
+    query = input("--->")
+    messages.append({"role": "user", "content": query})
 
     while True:
         completion = client.chat.completions.create(
-        model='deepseek-ai/DeepSeek-V3:fireworks-ai',
-        messages=messages,
-        response_format = {"type":"json_object"}
+            model='deepseek-ai/DeepSeek-V3:fireworks-ai',
+            messages=messages,
+            response_format={"type": "json_object"}
         )
         print(completion.choices[0].message.content)
-        
+
         output = json.loads(completion.choices[0].message.content)
-        messages.append({"role":"assistant","content":completion.choices[0].message.content})
+        messages.append(
+            {"role": "assistant", "content": completion.choices[0].message.content})
 
+        if (output["step"] == "function_call"):
+           response = function[output["function"]](output["input"])
+           observe_msg = json.dumps({"step": "observe", "output": response})
 
-        if(output["step"]=="function_call"):
-           response =  function[output["function"]](output["input"])
-           observe_msg = json.dumps({"step":"observe","output": response})
+           messages.append({"role": "assistant", "content": observe_msg})
 
-           messages.append({"role":"assistant","content": observe_msg})
-
-            
-
-        if(output["step"]=="final"):
+        if (output["step"] == "final"):
             break
-
-
-

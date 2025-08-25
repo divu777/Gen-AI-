@@ -20,7 +20,7 @@ split_docs = text_splitter.split_documents(documents=docs)
 
 embedding = OpenAIEmbeddings(model='text-embedding-3-large')
 
-vectorDB = QdrantVectorStore(
+vectorDB = QdrantVectorStore.from_documents(
     collection_name='book_queue',
     documents=split_docs,
     embedding=embedding,

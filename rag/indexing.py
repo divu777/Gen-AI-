@@ -9,15 +9,17 @@ from langchain_qdrant import QdrantVectorStore
 from pathlib import Path
 load_dotenv()
 
-API_KEY= os.getenv("API_KEY");
+API_KEY = os.getenv("API_KEY")
 
-client  = OpenAI(
-    base_url="https://router.huggingface.co/v1",
-    api_key=API_KEY
-)
+# client = OpenAI(
+#     base_url="https://router.huggingface.co/v1",
+#     api_key=API_KEY
+# )
+
+client = OpenAI()
 
 print(__file__)
-file_path  = Path(__file__).parent / "book.pdf"
+file_path = Path(__file__).parent / "nodejs.pdf"
 
 loader = PyPDFLoader(file_path=file_path)
 
@@ -26,23 +28,22 @@ docs = loader.load()
 
 # chunking of text
 text_split = RecursiveCharacterTextSplitter(chunk_size=1000,
-    chunk_overlap=400)
+                                            chunk_overlap=400)
 
 split_docs = text_split.split_documents(documents=docs)
 
 
-
-#embedding 
+# embedding
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 
-##vector db 
+# vector db
 
-qdrant  = QdrantVectorStore.from_documents(
+qdrant = QdrantVectorStore.from_documents(
     documents=split_docs,
-    collection_name = 'book',
+    collection_name='book_node',
     embedding=embeddings,
-    url = "http://localhost:6333"
-)   
+    url="http://vectordb:6333"
+)
 
 print("Done with indexing the doc")

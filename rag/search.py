@@ -1,3 +1,4 @@
+# flake8: noqa
 from langchain_qdrant import QdrantVectorStore
 from langchain_openai import OpenAIEmbeddings
 from openai import OpenAI
@@ -7,37 +8,41 @@ import os
 
 load_dotenv()
 
-API_KEY=os.getenv("API_KEY")
+API_KEY = os.getenv("API_KEY")
 
 embeding = OpenAIEmbeddings(
     model='text-embedding-3-large'
 )
 
-client = OpenAI(
-    base_url="https://router.huggingface.co/v1",
-    API_KEY=API_KEY
-)
+# client = OpenAI(
+#     base_url="https://router.huggingface.co/v1",
+#     API_KEY=API_KEY
+# )
+
+client = OpenAI()
+
 
 vector_db = QdrantVectorStore.from_existing_collection(
     collection_name='book',
-    url='http://localhost:6333',
+    url='http://vectordb:6333',
     embedding=embeding
 )
 
-messages=[]
-
+messages = []
 
 
 while True:
-    user_query = input("=====>");
-    # vector similarity search 
+    user_query = input("=====>")
+    # vector similarity search
     search_results = vector_db.similarity_search(
         query=user_query
     )
 
-    content = "\n\n".join([f"Page Content: {result.page_content} \n Page Number: {result.metadata["page_label"]}\n File Source: {result.metadata["source"]}" for result in search_results])
+    content = "\n\n".join(
+        [f"Page Content: {result.page_content} \n Page Number: {result.metadata["page_label"]}\n File Source: {result.metadata["source"]}" for result in search_results])
 
-    SYSTEM_PROMPT = '''
+    print(content+"------------>")
+    SYSTEM_PROMPT = f'''
     #GOAL
     You are a helpful AI Agent that helps User with his queries regarding anything he might ask from the Context provided to you 
 
@@ -47,34 +52,21 @@ while True:
     3) If no context is provided to you , reply with "Sorry the context provided was not enough for me to provide you with any answer right now" but with several variations of the same message 
 
     #CONTEXT
-    {{vector_db}}
-
-    #OUTPUT_FORMAT
-    {{
-    "output": answer of the query of the user
-    }}
-
-    **IMPORTANT**
-    Always give output in valid json, no markdown , no xml tags and no triple backslashes
+    {content}
 
 '''
 
-    messages.append({"role":"system","content":SYSTEM_PROMPT});
+    messages.append({"role": "system", "content": SYSTEM_PROMPT})
 
-    messages.append({"role":"user","content":user_query})
+    messages.append({"role": "user", "content": user_query})
 
-    completion = client.chat.completions(
-        model='deepseek-ai/DeepSeek-V3:fireworks-ai',
+    completion = client.chat.completions.create(
+        model='gpt-4.1',
         messages=messages,
-        response_format = {"type":"json_object"}
     )
 
-    response = json.load(completion.choices[0].message.content)
     print(completion.choices[0].message.content)
-    break;
-
-    
-
+    break
 
 
 # have to make something like cursor , also have to make open app that has tools and the way to talk to tools and rag based on the pdf

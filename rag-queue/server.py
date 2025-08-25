@@ -15,5 +15,4 @@ def query_chat(query: str = Query(..., description="Chat Message")):
     return {
         "quer": query,
         "jobid": jobid.id
-        }
-    
+        } 
